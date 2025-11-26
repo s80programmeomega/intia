@@ -2,65 +2,69 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreCustomerRequest;
-use App\Http\Requests\UpdateCustomerRequest;
 use App\Models\Customer;
+use App\Models\Branch;
+use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $customers = Customer::with('branch')->latest()->get();
+        return view('customers.index', compact('customers'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $branches = Branch::all();
+        return view('customers.create', compact('branches'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreCustomerRequest $request)
+    public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|max:255',
+            'email' => 'required|email|unique:customers',
+            'phone' => 'required',
+            'address' => 'required',
+            'date_of_birth' => 'required|date',
+            'branch_id' => 'required|exists:branches,id',
+        ]);
+
+        Customer::create($request->all());
+        return redirect()->route('customers.index')->with('success', 'Customer created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Customer $customer)
     {
-        //
+        $customer->load(['branch', 'policies']);
+        return view('customers.show', compact('customer'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Customer $customer)
     {
-        //
+        $branches = Branch::all();
+        return view('customers.edit', compact('customer', 'branches'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateCustomerRequest $request, Customer $customer)
+    public function update(Request $request, Customer $customer)
     {
-        //
+        $request->validate([
+            'name' => 'required|max:255',
+            'email' => 'required|email|unique:customers,email,' . $customer->id,
+            'phone' => 'required',
+            'address' => 'required',
+            'date_of_birth' => 'required|date',
+            'branch_id' => 'required|exists:branches,id',
+        ]);
+
+        $customer->update($request->all());
+        return redirect()->route('customers.index')->with('success', 'Customer updated successfully.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Customer $customer)
     {
-        //
+        $customer->delete();
+        return redirect()->route('customers.index')->with('success', 'Customer deleted successfully.');
     }
 }

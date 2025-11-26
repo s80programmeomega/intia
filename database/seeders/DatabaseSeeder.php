@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
 
         User::factory()->create([
             'name' => 'Admin User',
-            'email' => 'admin@intia.com',
+            'email' => 'admin@email.com',
             'role' => 'Admin',
             'branch_id' => 1,
         ]);
