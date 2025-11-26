@@ -15,11 +15,19 @@ class DatabaseSeeder extends Seeder
             PolicySeeder::class,
         ]);
 
+        // Admin user
         User::factory()->create([
             'name' => 'Admin User',
-            'email' => 'admin@email.com',
+            'email' => 'admin@intia.com',
             'role' => 'Admin',
             'branch_id' => 1,
+        ]);
+        // Agent user
+        User::factory()->create([
+            'name' => 'Agent User',
+            'email' => 'agent@intia.com',
+            'role' => 'Agent',
+            'branch_id' => 2,
         ]);
     }
 }
